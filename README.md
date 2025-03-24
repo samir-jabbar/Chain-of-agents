@@ -1,144 +1,80 @@
-# Chain of Agents Implementation
+# CoA-Text2OWL: Enhancing Ontology Learning with Chain-of-Agents Framework
 
-![Chain of Agents](Screenshot%202025-01-29%20at%2015.05.34.png)
+This project implements the CoA (Chain-of-Agents) architecture to enhance the Text2OWL process, aiming to overcome the coherence, completeness, and scalability limitations of single-LLM ontology learning approaches. By distributing the task across multiple worker agents and a manager agent, CoA-Text2OWL enables more precise extraction of classes, object properties, and relationships from large and complex unstructured texts.
 
-Chain of Agents (CoA) implementation in Python and Swift - A framework for long-context tasks using Large Language Models (LLMs).
+---
 
 ## Overview
 
-This repository implements the Chain-of-Agents framework as described in:
+**CoA-Text2OWL** introduces a Chain-of-Agents (CoA) paradigm for ontology learning (OL) from unstructured text. Instead of using a single LLM to directly generate an ontology, CoA-Text2OWL distributes the task across multiple worker agents and a manager agent, improving scalability, coherence, and completeness.
 
-- [Chain of Agents: Large language models collaborating on long-context tasks](https://research.google/blog/chain-of-agents-large-language-models-collaborating-on-long-context-tasks/) (Google Research Blog)
-- [Chain of Agents Paper](https://openreview.net/pdf?id=LuCLf4BJsr) (Research Paper)
+We evaluated CoA-Text2OWL against a traditional single-LLM Text2OWL method and demonstrated significant improvements, especially in extracting object properties.
 
-The Chain of Agents framework enables efficient processing of long-context tasks by:
+## Architecture
 
-1. Breaking down large inputs into manageable chunks
-2. Using worker agents to process individual chunks
-3. Employing a manager agent to synthesize results
+- **Input Processing**: PDF parsing and text segmentation using PyMuPDF.
+- **Chain-of-Agents Core**:
+  - **Worker Agents**: Each processes a text chunk and generates partial OWL ontologies.
+  - **Manager Agent**: Integrates outputs into a coherent final ontology.
+- **Output Generation**: Final ontology serialized in OWL Turtle format.
 
-## Features
+All agents are powered by the Mistral models.
 
-- Support for PDF document analysis
-- Configurable chunk sizes for processing
-- Real-time progress tracking
-- Streaming responses from both worker and manager agents
-- Clean macOS native interface
-- Dual processing modes:
-  - Cloud-based processing using Together AI's LLaMA models
-  - On-device processing using MLX framework
-- Support for offline inference with MLX
+## Datasets
 
-## Installation
+- **Pizza Ontology Texts**: Structured descriptions of pizzas used for baseline and comparative evaluation.
+- **TRACES Project Data**: Real-world Geneva tramway and mobility policy documents.
+
+## Repository Architecture
+
+```bash
+.
+├── chain_of_agents/
+│   ├── agents.py          # Definition of Worker and Manager agents
+│   ├── main.py            # Main script to run the CoA workflow
+│   ├── run.py             # Run configurations for experiments
+│   ├── utils.py           # Helper functions
+│   ├── __pycache__/       # Compiled python files
+│   ├── bert_score_eval.ipynb      # Notebook for evaluating real-world ontologies
+│   ├── pizza_results_analysis.ipynb # Notebook for Pizza dataset evaluation
+│   ├── web_scraping.ipynb          # Notebook for scraping real-world data
+│   ├── llm_owl_pizza_onto_mistral.ttl # Example output from LLM
+│   ├── ontology.ttl       # Generated ontology output
+│   └── TRACES PDFs        # Real-world input documents
+├── pizza_description.pdf          # Pizza domain input text
+├── pizza_description.txt          # Pizza domain input text (txt version)
+├── pizza_onto_ground_truth.ttl     # Ground truth for Pizza Ontology
+├── politiques_public_ontology.ttl  # Policy ontology output
+├── tramway_ontology.ttl            # Tramway ontology output
+├── run.sh                 # Shell script to execute the full workflow
+├── requirements.txt       # Python dependencies
+├── README.md              # Project documentation
+```
 
 ## Installation
 
 ```bash
-git clone https://github.com/rudrankriyam/chain-of-agents.git
-cd chain-of-agents
+# Clone the repository
+git clone https://github.com/your-org/coa-text2owl.git
+cd coa-text2owl
+
+# Install required packages
 pip install -r requirements.txt
 ```
 
-### Prerequisites
-
-- Python 3.x
-- Xcode 15+ (for macOS app)
-- Together API key (sign up at [Together.ai](https://together.ai))
-
-
 ## Usage
 
-### Command Line Version
-
-1. Create a `.env` file in the root directory and add your Together API key:
-
+To run the CoA-Text2OWL framework for ontology generation:
 ```bash
-echo "TOGETHER_API_KEY=your_api_key_here" >> .env
+bash run.sh
 ```
 
-2. Run the example script:
+To evaluate the generated ontologies against the Pizza ontology baseline:
+- Open and run the notebook: `notebooks/pizza_results_analysis.ipynb`
 
-```bash
-./run.sh
-```
+For real-world use case (TRACES project):
+- Scrape source data using: `notebooks/web_scraping.ipynb`
+- Generate ontologies with `run.sh` script.
+- Evaluate generated ontologies using: `notebooks/bert_score_eval.ipynb`
 
-This will:
-- Set up a Python virtual environment
-- Install required dependencies
-- Process a sample PDF document using the Chain of Agents framework
-
-### macOS App
-
-1. Start the API server:
-
-```bash
-./run_api.sh
-```
-This will:
-- Activate the Python virtual environment
-- Start the API server that the macOS app communicates with
-- The server will run on `localhost:8000`
-
-2. Open the Xcode project:
-
-```bash
-open ChainOfAgents.xcodeproj
-```
-
-3. Build and run the app (⌘R)
-
-#### Processing Modes
-
-- **Cloud Processing**: Uses Together AI's hosted models through the API server
-- **On-Device Processing**: Uses MLX framework for local inference
-  - Automatically downloads and caches the required model
-  - No internet connection required after initial model download
-  - Lower latency but may have different performance characteristics
-
-The macOS app provides:
-- PDF document selection
-- Custom query input
-- Real-time processing visualization
-- Worker agent progress tracking
-- Final synthesis display
-- Toggle between cloud and on-device processing
-
-## Models
-
-### Cloud Processing
-Uses Together AI's hosted models:
-- Worker model: `meta-llama/Llama-3.3-70B-Instruct-Turbo-Free`
-- Manager model: `meta-llama/Llama-3.3-70B-Instruct-Turbo-Free`
-
-### On-Device Processing
-Uses MLX-optimized models:
-- Default model: `llama-3.1-8B` (Quantized 8-bit version)
-- Automatically handles model downloading and caching
-- Optimized for Apple Silicon processors
-
-## Technical Details
-
-- Built with SwiftUI for the macOS interface
-- Uses MLX framework for efficient on-device inference
-- Implements Server-Sent Events (SSE) for real-time progress updates
-- Supports concurrent processing of document chunks
-- Automatic memory management for large documents
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Citation
-
-```bibtex
-@article{zhang2024chain,
-    title={Chain of Agents: Large Language Models Collaborating on Long-Context Tasks},
-    author={Zhang, Yusen and Sun, Ruoxi and Chen, Yanfei and Pfister, Tomas and Zhang, Rui and Arık, Sercan Ö.},
-    journal={arXiv preprint arXiv:2404.08392},
-    year={2024}
-}
-```
+Make sure to adjust the input/output paths inside each notebook according to your project structure.
