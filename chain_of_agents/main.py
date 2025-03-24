@@ -12,8 +12,8 @@ class ChainOfAgents:
     
     def __init__(
         self,
-        worker_model: str = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",  # Together AI model
-        manager_model: str = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",  # Together AI model
+        worker_model: str = "mistral-large-2402",  # Mistral AI model
+        manager_model: str = "mistral-large-2402",  # Mistral AI model
         chunk_size: int = 500,
         worker_prompt: Optional[str] = None,
         manager_prompt: Optional[str] = None
@@ -115,3 +115,9 @@ class ChainOfAgents:
             "type": "manager",
             "content": final_output
         } 
+
+
+
+
+
+

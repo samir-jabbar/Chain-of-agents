@@ -1,6 +1,9 @@
 from typing import List, Optional, Iterator, Dict
-from together import Together
+from mistralai import Mistral, UserMessage
 import os
+os.environ["MISTRAL_API_KEY"]= "***REMOVED***"
+api_key = os.environ["MISTRAL_API_KEY"]
+model = "mistral-large-2402"
 
 class WorkerAgent:
     """Worker agent that processes individual chunks of text."""
@@ -15,7 +18,9 @@ class WorkerAgent:
         """
         self.model = model
         self.system_prompt = system_prompt
-        self.client = Together()  # Uses TOGETHER_API_KEY from environment
+        #self.client = Together()  # Uses TOGETHER_API_KEY from environment
+        self.client = Mistral(api_key=api_key)  # Uses MISTRAL_API_KEY from environment
+        
     
     def process_chunk(self, chunk: str, query: str, previous_cu: Optional[str] = None) -> str:
         """
@@ -34,10 +39,10 @@ class WorkerAgent:
             {"role": "user", "content": f"Chunk: {chunk}\nQuery: {query}\nPrevious CU: {previous_cu or 'None'}"}
         ]
         
-        response = self.client.chat.completions.create(
+        response = self.client.chat.complete(
             model=self.model,
             messages=messages,
-            temperature=0.3
+            temperature=0
         )
         
         return response.choices[0].message.content
@@ -52,7 +57,7 @@ class WorkerAgent:
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            temperature=0.3,
+            temperature=0,
             stream=True
         )
         
@@ -73,7 +78,9 @@ class ManagerAgent:
         """
         self.model = model
         self.system_prompt = system_prompt
-        self.client = Together()  # Uses TOGETHER_API_KEY from environment
+        #self.client = Together()  # Uses TOGETHER_API_KEY from environment
+        self.client = Mistral(api_key=api_key)  # Uses MISTRAL_API_KEY from environment
+
     
     def synthesize(self, worker_outputs: List[str], query: str) -> str:
         """
@@ -94,10 +101,10 @@ class ManagerAgent:
             {"role": "user", "content": f"Worker Outputs:\n{combined_outputs}\n\nQuery: {query}"}
         ]
         
-        response = self.client.chat.completions.create(
+        response = self.client.chat.complete(
             model=self.model,
             messages=messages,
-            temperature=0.3
+            temperature=0
         )
         
         return response.choices[0].message.content
@@ -115,7 +122,7 @@ class ManagerAgent:
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            temperature=0.3,
+            temperature=0,
             stream=True
         )
         

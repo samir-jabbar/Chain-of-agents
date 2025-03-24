@@ -1,0 +1,162 @@
+@prefix : <http://example.org/example#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Base Classes
+:Pizza rdf:type owl:Class ;
+       rdfs:label "Pizza"@en .
+
+# Subclasses of Pizza
+:DeepPanBase a owl:Class ;
+ rdf:subClassOf :Pizza ;
+ rdfs:label "Deep Pan Base"@en .
+
+:ThinAndCrispyBase a owl:Class ;
+ rdf:subClassOf :Pizza ;
+ rdfs:label "Thin and Crispy Base"@en .
+
+# Topping Classes
+:CheeseTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Cheese Topping"@en .
+  
+:MozzarellaTopping rdf:type owl:Class ;
+ rdf:subClassOf :CheeseTopping ;
+ rdfs:label "Mozzarella Topping"@en .
+
+:FourCheesesTopping rdf:type owl:Class ;
+ rdf:subClassOf :CheeseTopping ;
+ rdfs:label "Four Cheeses Topping"@en .
+
+:MeatTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Meat Topping"@en .
+
+:ChickenTopping rdf:type owl:Class ;
+ rdf:subClassOf :MeatTopping ;
+ rdfs:label "Chicken Topping"@en .
+
+:ParmaHamTopping rdf:type owl:Class ;
+ rdf:subClassOf :MeatTopping ;
+ rdfs:label "Parma Ham Topping"@en .
+
+:PeperoniSausageTopping rdf:type owl:Class ;
+ rdf:subClassOf :MeatTopping ;
+ rdfs:label "Peperoni Sausage Topping"@en .
+
+:VegetableTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Vegetable Topping"@en .
+
+:ArtichokeTopping rdf:type owl:Class ;
+ rdf:subClassOf :VegetableTopping ;
+ rdfs:label "Artichoke Topping"@en .
+
+:AsparagusTopping rdf:type owl:Class ;
+ rdf:subClassOf :VegetableTopping ;
+ rdfs:label "Asparagus Topping"@en .
+
+:GreenPepperTopping rdf:type owl:Class ;
+ rdf:subClassOf :VegetableTopping ;
+ rdfs:label "Green Pepper Topping"@en .
+
+:LeekTopping rdf:type owl:Class ;
+ rdf:subClassOf :VegetableTopping ;
+ rdfs:label "Leek Topping"@en .
+
+:MushroomTopping rdf:type owl:Class ;
+ rdf:subClassOf :VegetableTopping ;
+ rdfs:label "Mushroom Topping"@en .
+
+:OliveTopping rdf:type owl:Class ;
+ rdf:subClassOf :VegetableTopping ;
+ rdfs:label "Olive Topping"@en .
+
+:OnionTopping rdf:type owl:Class ;
+ rdf:subClassOf :VegetableTopping ;
+ rdfs:label "Onion Topping"@en .
+
+:SpinachTopping rdf:type owl:Class ;
+ rdf:subClassOf :VegetableTopping ;
+ rdfs:label "Spinach Topping"@en .
+
+:CheesyVegetableTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Cheesy Vegetable Topping"@en .
+
+:SeafoodTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Seafood Topping"@en .
+
+:PrawnsTopping rdf:type owl:Class ;
+ rdf:subClassOf :SeafoodTopping ;
+ rdfs:label "Prawns Topping"@en .
+
+:MixedSeafoodTopping rdf:type owl:Class ;
+ rdf:subClassOf :SeafoodTopping ;
+ rdfs:label "Mixed Seafood Topping"@en .
+
+:FruttiDiMarePizza rdf:type owl:Class ;
+ rdf:subClassOf :Pizza ;
+ rdf:subPropertyChain [ a owl:Restriction ;
+                         owl:onProperty :hasTopping ;
+                         owl:hasValue :SeafoodTopping ] ;
+ rdfs:label "Frutti Di Mare Pizza"@en .
+
+:SpicyPizza rdf:type owl:Class ;
+ rdf:subClassOf :Pizza ;
+ rdfs:label "Spicy Pizza"@en .
+
+:AmericanHotPizza rdf:type owl:Class ;
+ rdf:subClassOf :SpicyPizza ;
+ rdfs:label "American Hot Pizza"@en .
+
+:CajunPizza rdf:type owl:Class ;
+ rdf:subClassOf :SpicyPizza ;
+ rdfs:label "Cajun Pizza"@en .
+
+:HotGreenPepperTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Hot Green Pepper Topping"@en .
+
+:HotSpicedBeefTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Hot Spiced Beef Topping"@en .
+
+:JalapenoPepperTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Jalapeno Pepper Topping"@en .
+
+:CajunSpiceTopping rdf:type owl:Class ;
+ rdf:subClassOf :Topping ;
+ rdfs:label "Cajun Spice Topping"@en .
+
+:CapricciosaPizza rdf:type owl:Class ;
+ rdf:subClassOf :Pizza ;
+ rdf:subPropertyChain [ a owl:Restriction ;
+                         owl:onProperty :hasTopping ;
+                         owl:hasValues ( :ParmaHamTopping
+                                           :MushroomTopping
+                                           :ArtichokeTopping
+                                           :OliveTopping ) ] ;
+ rdfs:label "Capricciosa Pizza"@en .
+
+:NapoletanaPizza rdf:type owl:Class ;
+ rdf:subClassOf :Pizza ;
+ rdf:subPropertyChain [ a owl:Restriction ;
+                         owl:onProperty :hasTopping ;
+                         owl:hasValue :Anchovies ] ;
+ rdfs:label "Napoletana Pizza"@en .
+
+# Properties
+:hasBaseType rdf:type owl:ObjectProperty ;
+ rdf:domain :Pizza ;
+ rdf:range rdf:Literal ;
+ rdfs:label "has base type"@en .
+
+:hasTopping rdf:type owl:ObjectProperty ;
+ rdf:domain :Pizza ;
+ rdf:range :Topping ;
+ rdfs:label "has topping"@en .

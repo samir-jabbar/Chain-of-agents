@@ -2,15 +2,19 @@
 
 # Exit on error
 set -e
-
 # Check if virtual environment exists
 if [ ! -d "venv" ]; then
     echo "Creating virtual environment..."
-    python3 -m venv venv
+    /c/Users/Daren/AppData/Local/Programs/Python/Python312/python -m venv venv
 fi
 
 # Activate virtual environment
-source venv/bin/activate
+# Detect OS and activate virtual environment accordingly
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+    source venv/Scripts/activate
+else
+    source venv/bin/activate
+fi
 
 # Install requirements
 echo "Installing requirements..."
@@ -26,7 +30,7 @@ fi
 
 # Run example
 echo "Running Chain of Agents example..."
-python3 - << EOF
+venv/Scripts/python - << EOF
 from chain_of_agents import ChainOfAgents
 from chain_of_agents.utils import read_pdf, split_into_chunks
 from chain_of_agents.agents import WorkerAgent, ManagerAgent
@@ -35,29 +39,22 @@ from dotenv import load_dotenv
 import pathlib
 import sys
 
-# Load environment variables
-env_path = pathlib.Path('.') / '.env'
-load_dotenv(dotenv_path=env_path)
-
-# Verify API key is loaded
-if not os.getenv("TOGETHER_API_KEY"):
-    raise ValueError("TOGETHER_API_KEY not found in environment variables")
 
 # Initialize Chain of Agents
 coa = ChainOfAgents(
-    worker_model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
-    manager_model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
-    chunk_size=500  # Reduced chunk size for better handling
+    worker_model="mistral-large-2411",
+    manager_model="mistral-large-2411",
+    chunk_size=1024  # Reduced chunk size for better handling
 )
 
 # Read PDF file
-pdf_path = "DeepSeek_R1.pdf"  # Updated to your PDF file
+pdf_path = "loi_réseau_transports_publics.pdf"  # Updated to your PDF file
 if not os.path.exists(pdf_path):
     print(f"Error: PDF file not found at {pdf_path}")
     sys.exit(1)
 
 input_text = read_pdf(pdf_path)
-query = "What are the key features, capabilities, and technical specifications of the DeepSeek R1 model? Please include any benchmark results or performance comparisons mentioned in the paper."
+query = "Use the given text to construct an OWL ontology in the Turtle format"
 
 # Process the text
 print("\nProcessing document with Chain of Agents...\n")
@@ -85,6 +82,12 @@ print("=" * 80 + "\n")
 manager = ManagerAgent(coa.manager_model, coa.manager_prompt)
 final_output = manager.synthesize(worker_outputs, query)
 print(final_output)
+
+# Save the ontology to a Turtle file
+ttl_filename = "ontology.ttl"
+with open(ttl_filename, "w", encoding="utf-8") as ttl_file:
+    ttl_file.write(final_output)
+print(f"\nOntology saved to {ttl_filename}")
 
 print("\n" + "=" * 80)
 EOF

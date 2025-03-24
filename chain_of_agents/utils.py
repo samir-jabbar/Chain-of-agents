@@ -27,7 +27,7 @@ def read_pdf(pdf_path: str) -> str:
         logger.error(f"Error reading PDF: {str(e)}")
         raise
 
-def split_into_chunks(text: str, chunk_size: int, model: str = "llama-3.3-70b-versatile") -> List[str]:
+def split_into_chunks(text: str, chunk_size: int, model: str = "open-mistral-7b") -> List[str]:
     """
     Split text into chunks based on word count.
     
@@ -74,7 +74,7 @@ def split_into_chunks(text: str, chunk_size: int, model: str = "llama-3.3-70b-ve
     logger.info(f"Split text into {len(chunks)} chunks")
     return chunks
 
-def count_tokens(text: str, model: str = "llama-3.3-70b-versatile") -> int:
+def count_tokens(text: str, model: str = "open-mistral-7b") -> int:
     """
     Count the number of words in a text string.
     
@@ -94,10 +94,18 @@ def get_default_prompts() -> tuple[str, str]:
     Returns:
         tuple[str, str]: (worker_prompt, manager_prompt)
     """
-    worker_prompt = """You are a worker agent responsible for analyzing a portion of a document.
-Your task is to identify key information related to the user's query and provide clear, concise analysis."""
+    
+    worker_prompt = """You are a helpful assistant in building an ontology. You are fluent in the W3C Semantic Web stack and RDF, RDFS, and OWL languages.
+    Use the given text to construct an OWL ontology in the Turtle format. Use this namespace: http://example.org/example#. Return only the turtle file.
+    Extract all the possible classes and subclasses.
 
-    manager_prompt = """You are a manager agent responsible for synthesizing information from multiple workers.
-Your task is to combine their analyses into a coherent, comprehensive response that directly answers the user's query."""
+    keep in mind that the syntax has to be like the following:
+        -For classes ":ClassName rdf:type owl:Class;"
+        -For ObjectProperty: "Name of the object property rdf:type owl:ObjectProperty ;"
+    """
+    
+    manager_prompt = """You are an ontology learning expert and your goal is to integrate the given ontologies with all their classes
+     into a coherent ontology while ensuring no reddandancy.
+    Your response should be structured, modular, and ready for further reasoning and inference."""
 
     return worker_prompt, manager_prompt 
