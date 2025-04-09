@@ -25,6 +25,32 @@ All agents are powered by the Mistral models.
 - **Pizza Ontology Texts**: Structured descriptions of pizzas used for baseline and comparative evaluation.
 - **TRACES Project Data**: Real-world Geneva tramway and mobility policy documents.
 
+## Repository Architecture
+
+```bash
+.
+├── chain_of_agents/
+│   ├── agents.py          # Definition of Worker and Manager agents
+│   ├── main.py            # Main script to run the CoA workflow
+│   ├── run.py             # Run configurations for experiments
+│   ├── utils.py           # Helper functions
+│   ├── __pycache__/       # Compiled python files
+│   ├── bert_score_eval.ipynb      # Notebook for evaluating real-world ontologies
+│   ├── pizza_results_analysis.ipynb # Notebook for Pizza dataset evaluation
+│   ├── web_scraping.ipynb          # Notebook for scraping real-world data
+│   ├── llm_owl_pizza_onto_mistral.ttl # Example output from LLM
+│   ├── ontology.ttl       # Generated ontology output
+│   └── TRACES PDFs        # Real-world input documents
+├── pizza_description.pdf          # Pizza domain input text
+├── pizza_description.txt          # Pizza domain input text (txt version)
+├── pizza_onto_ground_truth.ttl     # Ground truth for Pizza Ontology
+├── politiques_public_ontology.ttl  # Policy ontology output
+├── tramway_ontology.ttl            # Tramway ontology output
+├── run.sh                 # Shell script to execute the full workflow
+├── requirements.txt       # Python dependencies
+├── README.md              # Project documentation
+```
+
 ## Installation
 
 ```bash
@@ -52,8 +78,3 @@ For real-world use case (TRACES project):
 - Evaluate generated ontologies using: `notebooks/bert_score_eval.ipynb`
 
 Make sure to adjust the input/output paths inside each notebook according to your project structure.
-
-
-
-
-
