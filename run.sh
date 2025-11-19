@@ -35,10 +35,21 @@ from chain_of_agents import ChainOfAgents
 from chain_of_agents.utils import read_pdf, split_into_chunks
 from chain_of_agents.agents import WorkerAgent, ManagerAgent
 import os
+from pathlib import Path
 from dotenv import load_dotenv
-import pathlib
 import sys
 
+# Load environment variables
+load_dotenv()
+
+# Define data directories
+DATA_ROOT = Path(".") / "data"
+INPUTS_DIR = DATA_ROOT / "inputs"
+OUTPUTS_DIR = DATA_ROOT / "outputs"
+
+# Ensure directories exist
+INPUTS_DIR.mkdir(parents=True, exist_ok=True)
+OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Initialize Chain of Agents
 coa = ChainOfAgents(
@@ -47,13 +58,14 @@ coa = ChainOfAgents(
     chunk_size=1024  # Reduced chunk size for better handling
 )
 
-# Read PDF file
-pdf_path = "loi_réseau_transports_publics.pdf"  # Updated to your PDF file
-if not os.path.exists(pdf_path):
+# Read PDF file from inputs directory
+pdf_path = INPUTS_DIR / "loi_réseau_transports_publics.pdf"
+if not pdf_path.exists():
     print(f"Error: PDF file not found at {pdf_path}")
+    print(f"Please place your PDF files in: {INPUTS_DIR}")
     sys.exit(1)
 
-input_text = read_pdf(pdf_path)
+input_text = read_pdf(str(pdf_path))
 query = "Use the given text to construct an OWL ontology in the Turtle format"
 
 # Process the text
@@ -83,8 +95,8 @@ manager = ManagerAgent(coa.manager_model, coa.manager_prompt)
 final_output = manager.synthesize(worker_outputs, query)
 print(final_output)
 
-# Save the ontology to a Turtle file
-ttl_filename = "ontology.ttl"
+# Save the ontology to outputs directory
+ttl_filename = OUTPUTS_DIR / "ontology.ttl"
 with open(ttl_filename, "w", encoding="utf-8") as ttl_file:
     ttl_file.write(final_output)
 print(f"\nOntology saved to {ttl_filename}")

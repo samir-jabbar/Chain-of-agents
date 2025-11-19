@@ -5,9 +5,19 @@ from dotenv import load_dotenv
 import json
 import os
 import logging
+from pathlib import Path
 
 # Load environment variables
 load_dotenv()
+
+# Define data directories
+DATA_ROOT = Path(__file__).parent / "data"
+INPUTS_DIR = DATA_ROOT / "inputs"
+OUTPUTS_DIR = DATA_ROOT / "outputs"
+
+# Ensure directories exist
+INPUTS_DIR.mkdir(parents=True, exist_ok=True)
+OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__)
 coa = ChainOfAgents(
@@ -41,13 +51,13 @@ def process_stream():
     if not query:
         return jsonify({'error': 'No query provided'}), 400
     
-    # Save PDF temporarily
-    temp_path = 'temp.pdf'
-    pdf_file.save(temp_path)
+    # Save PDF temporarily to inputs directory
+    temp_path = INPUTS_DIR / 'temp.pdf'
+    pdf_file.save(str(temp_path))
     
     try:
         # Extract text from PDF
-        input_text = read_pdf(temp_path)
+        input_text = read_pdf(str(temp_path))
         
         def generate():
             try:
@@ -64,8 +74,8 @@ def process_stream():
     
     finally:
         # Clean up temporary file
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
+        if temp_path.exists():
+            temp_path.unlink()
 
 @app.route('/health', methods=['GET'])
 def health_check():

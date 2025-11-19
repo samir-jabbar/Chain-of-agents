@@ -1,8 +1,14 @@
 from typing import List, Optional, Iterator, Dict
 from mistralai import Mistral, UserMessage
 import os
-os.environ["MISTRAL_API_KEY"]= "***REMOVED***"
-api_key = os.environ["MISTRAL_API_KEY"]
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+api_key = os.getenv("MISTRAL_API_KEY")
+if not api_key:
+    raise ValueError("MISTRAL_API_KEY not set. Please create a .env file with your API key.")
+
 model = "mistral-large-2402"
 
 class WorkerAgent:

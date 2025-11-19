@@ -1,9 +1,10 @@
 from rdflib import Graph
+from pathlib import Path
 
 def load_ontology(file_path):
     """Load an ontology from a TTL file into an RDFLib Graph."""
     graph = Graph()
-    graph.parse(file_path, format="turtle")
+    graph.parse(str(file_path), format="turtle")
     return graph
 
 def extract_elements(graph):
@@ -47,8 +48,20 @@ def main(reference_ttl, generated_ttl):
     
     return metrics
 
-# Example usage (replace with your actual file paths)
-reference_ttl_file = "pizza_onto_ground_truth.ttl"
-generated_ttl_file = "ontology.ttl"
-
-metrics_result = main(reference_ttl_file, generated_ttl_file)
+# Use structured data paths
+if __name__ == "__main__":
+    # Reference data directories
+    DATA_ROOT = Path(__file__).parent.parent / "data"
+    INPUT_DIR = DATA_ROOT / "inputs"
+    OUTPUT_DIR = DATA_ROOT / "outputs"
+    
+    # Example usage with new directory structure
+    reference_ttl_file = INPUT_DIR / "pizza_onto_ground_truth.ttl"
+    generated_ttl_file = OUTPUT_DIR / "ontology.ttl"
+    
+    if not reference_ttl_file.exists():
+        print(f"Error: Reference file not found at {reference_ttl_file}")
+    elif not generated_ttl_file.exists():
+        print(f"Error: Generated file not found at {generated_ttl_file}")
+    else:
+        metrics_result = main(reference_ttl_file, generated_ttl_file)
